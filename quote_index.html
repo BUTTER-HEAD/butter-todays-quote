@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>◌( 오늘의 한 구절 )◌</title>
+  <link href="https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <style>
+    body {
+      font-family: 'Gowun Dodum', sans-serif;
+      background-color: #fefbd4;
+      padding: 40px 20px;
+      text-align: center;
+      color: #333;
+    }
+
+    h1 {
+      font-family: 'Gowun Dodum', sans-serif;
+      font-size: 2.5em;
+      margin-bottom: 10px;
+    }
+
+    #date {
+      font-family: 'Gowun Dodum', sans-serif;
+      font-size: 0.95em;
+      color: #555;
+      margin-bottom: 25px;
+    }
+
+    #quote-box {
+      background-color: #f1f5da;
+      border-radius: 20px;
+      border: 1px solid #000;
+      padding: 25px;
+      margin: 0 auto 30px;
+      width: 600px;
+    }
+
+    .quote-text {
+      font-family: 'Gowun Dodum', sans-serif;
+      text-align: left;
+      font-size: 1.1em;
+      line-height: 1.7;
+      margin-bottom: 20px;
+      white-space: pre-wrap;
+    }
+
+    .quote-meta {
+      text-align: right;
+      font-family: 'Gowun Dodum', sans-serif;
+      font-size: 0.9em;
+      color: #888;
+    }
+
+    .button-group {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    button {
+      background-color: #f1f5da;
+      color: #333;
+      border: 1px solid #000;
+      padding: 10px 16px;
+      font-family: 'Gowun Dodum', sans-serif;
+      font-size: 1em;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    button:hover {
+      background-color: #e4e9c4;
+    }
+  </style>
+</head>
+<body>
+  <h1>☆*: .｡. O 오늘의 책 속 한 구절 o .｡.:*☆</h1>
+  <div id="date"></div>
+
+  <div id="quote-box"></div>
+
+  <div class="button-group">
+    <button onclick="recommendQuote()">다른 구절 보기</button>
+    <button onclick="saveAsImage()">저장하기</button>
+    <button onclick="shareQuote()">공유하기</button>
+  </div>
+
+<script>
+  let quotes = [];
+
+  // 외부 JSON에서 구절 목록 불러오기
+  fetch('quotes.json')
+    .then(response => response.json())
+    .then(data => {
+      quotes = data;
+      recommendQuote(); // 첫 구절 자동 출력
+    })
+    .catch(error => {
+      console.error("구절 데이터를 불러오지 못했습니다:", error);
+    });
+
+  function recommendQuote() {
+    if (quotes.length === 0) return;
+
+    const randomIndex = Math.floor(Math.random() * quotes.length);
+    const quote = quotes[randomIndex];
+
+    document.getElementById("quote-box").innerHTML = `
+      <div class="quote-text">"${quote.text}"</div>
+      <div class="quote-meta">${quote.author}, &lt;${quote.book}&gt;</div>
+    `;
+  }
+
+  function saveAsImage() {
+    html2canvas(document.body).then(canvas => {
+      const today = new Date();
+      const dateStr = today.toISOString().split("T")[0];
+      const fileName = `${dateStr}_버메추.png`;
+
+      const link = document.createElement('a');
+      link.download = fileName;
+      link.href = canvas.toDataURL();
+      link.click();
+    });
+  }
+
+  function shareQuote() {
+    const quoteText = document.getElementById("quote-box").innerText;
+    const shareData = {
+      title: "◌( 오늘의 한 구절 )◌",
+      text: quoteText,
+      url: window.location.href
+    };
+
+    if (navigator.share) {
+      navigator.share(shareData).catch(err => console.error("공유 실패:", err));
+    } else {
+      alert("이 브라우저는 공유 기능을 지원하지 않습니다.");
+    }
+  }
+
+  // 날짜 표시
+  const today = new Date();
+  const formattedDate = today.toLocaleDateString('ko-KR', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    weekday: 'long'
+  });
+  document.getElementById("date").innerText = formattedDate;
+</script>
+
+</body>
+</html>
