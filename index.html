@@ -110,7 +110,7 @@
     const quote = quotes[randomIndex];
 
     document.getElementById("quote-box").innerHTML = `
-      <div class="quote-text">"${quote.text}"</div>
+      <div class="quote-text">${quote.text}</div>
       <div class="quote-meta">
  		    ${quote.author}${quote.book ? `, &lt;${quote.book}&gt;` : ""}
 	    </div>
