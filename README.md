@@ -1,1 +1,0 @@
-# butter-todays-quote
