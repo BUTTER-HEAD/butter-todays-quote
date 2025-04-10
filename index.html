@@ -106,19 +106,16 @@
       console.error("구절 데이터를 불러오지 못했습니다:", error);
     });
 
-  function recommendQuote() {
-    if (quotes.length === 0) return;
+function displayQuote(quote) {
+  const text = quote.text ?? "";
+  const author = quote.author ?? "";
+  const book = quote.book ?? "";
 
-    const randomIndex = Math.floor(Math.random() * quotes.length);
-    const quote = quotes[randomIndex];
-
-    document.getElementById("quote-box").innerHTML = `
-      <div class="quote-text">${quote.text}</div>
-      <div class="quote-meta">
- 		    ${quote.author}${quote.book ? `, &lt;${quote.book}&gt;` : ""}
-	    </div>
-    `;
-  }
+  document.getElementById("quote-box").innerHTML = `
+    <div class="quote-text">${text}</div>
+    <div class="quote-meta">${author}${book ? `, &lt;${book}&gt;` : ""}</div>
+  `;
+}
 
   function saveAsImage() {
     html2canvas(document.body).then(canvas => {
