@@ -139,7 +139,7 @@ function recommendQuote() {
 
       const link = document.createElement('a');
       link.download = fileName;
-      link.href = "https://butter-head.imweb.me/shop_view/?idx=34";
+      link.href = canvas.toDataURL();
       link.click();
     });
   }
@@ -149,7 +149,7 @@ function recommendQuote() {
     const shareData = {
       title: "◌( 오늘의 한 구절 )◌",
       text: quoteText,
-      url: window.location.href
+      url: "https://butter-head.imweb.me/shop_view/?idx=34"
     };
 
     if (navigator.share) {
