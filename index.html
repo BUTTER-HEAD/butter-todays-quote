@@ -106,23 +106,24 @@
       console.error("구절 데이터를 불러오지 못했습니다:", error);
     });
 
-  function recommendQuote() {
-    if (quotes.length === 0) return;
+function displayQuote(quote) {
+  const quoteBox = document.getElementById("quote-box");
+  quoteBox.innerHTML = "";
 
-    const randomIndex = Math.floor(Math.random() * quotes.length);
-    const quote = quotes[randomIndex];
-	  
   const text = quote.text ?? "";
   const author = quote.author ?? "";
   const book = quote.book ?? "";
 
-  const quoteEl = document.createElement("div");
-  quoteEl.className = "quote-text";
-  quoteEl.innerText = quote.text;
-  document.getElementById("quote-box").appendChild(quoteEl);
-    <div class="quote-text">${text}</div>
-    <div class="quote-meta">${author}${book ? `, &lt;${book}&gt;` : ""}</div>
-  `;
+  const textEl = document.createElement("div");
+  textEl.className = "quote-text";
+  textEl.innerText = text;
+
+  const metaEl = document.createElement("div");
+  metaEl.className = "quote-meta";
+  metaEl.innerHTML = `${author}${book ? `, &lt;${book}&gt;` : ""}`;
+
+  quoteBox.appendChild(textEl);
+  quoteBox.appendChild(metaEl);
 }
 
   function saveAsImage() {
