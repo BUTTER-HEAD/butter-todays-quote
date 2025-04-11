@@ -106,7 +106,12 @@
       console.error("구절 데이터를 불러오지 못했습니다:", error);
     });
 
-function recommendQuote(quotes) {
+  function recommendQuote() {
+    if (quotes.length === 0) return;
+
+    const randomIndex = Math.floor(Math.random() * quotes.length);
+    const quote = quotes[randomIndex];
+	  
   const text = quote.text ?? "";
   const author = quote.author ?? "";
   const book = quote.book ?? "";
