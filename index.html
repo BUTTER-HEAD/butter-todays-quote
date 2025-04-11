@@ -116,7 +116,10 @@
   const author = quote.author ?? "";
   const book = quote.book ?? "";
 
-  document.getElementById("quote-box").innerHTML = `
+  const quoteEl = document.createElement("div");
+  quoteEl.className = "quote-text";
+  quoteEl.innerText = quote.text;
+  document.getElementById("quote-box").appendChild(quoteEl);
     <div class="quote-text">${text}</div>
     <div class="quote-meta">${author}${book ? `, &lt;${book}&gt;` : ""}</div>
   `;
