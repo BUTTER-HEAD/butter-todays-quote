@@ -81,15 +81,11 @@
     }
 
     .logo-image {
+       display: block;
+       margin: 0 auto -15px;
        max-height: 40px;
        width: auto;
        object-fit: contain;
-       display: inline-block;
-       vertical-align: middle;
-       padding: 0;
-       margin: 0;
-       background: none;
-       border: none;
      }
 
 @media (max-width: 480px) {
@@ -114,6 +110,7 @@
   </style>
 </head>
 <body>
+  <img src="로고.png" alt="로고" class="logo-image">
   <h1>☆*: .｡. O 오늘의 책 속 한 구절 o .｡.:*☆</h1>
   <div id="date"></div>
 
@@ -123,7 +120,6 @@
     <button onclick="recommendQuote()">다른 구절 보기</button>
     <button onclick="saveAsImage()">저장하기</button>
     <button onclick="shareQuote()">공유하기</button>
-    <img src="로고.png" alt="로고" class="logo-image">
   </div>
 
 <script>
