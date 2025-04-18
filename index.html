@@ -156,9 +156,11 @@ function saveAsImage() {
   document.querySelectorAll('.screen-only').forEach(el => el.style.display = 'none');
   document.querySelectorAll('.share-only').forEach(el => el.style.display = 'block');
 
+  const isMobile = window.innerWidth <= 500;
+
+  const quoteBox = document.getElementById("quote-box");
   const titleEl = document.querySelector("h1");
   const shareButtonEl = document.querySelector("button:last-of-type");
-  const quoteBox = document.getElementById("quote-box");
 
   const titleRect = titleEl.getBoundingClientRect();
   const buttonRect = shareButtonEl.getBoundingClientRect();
@@ -170,38 +172,46 @@ function saveAsImage() {
 
   const quoteTop = quoteRect.top + window.scrollY;
   const quoteLeft = quoteRect.left + window.scrollX;
+  const quoteCenterY = quoteTop + quoteRect.height / 2;
+  const quoteCenterX = quoteLeft + quoteRect.width / 2;
+
+  const desiredCenterY = captureHeight / 2;
+  const desiredCenterX = 400;
+
+  const deltaY = desiredCenterY - (quoteCenterY - captureTop);
+  const deltaX = desiredCenterX - quoteCenterX;
+
+  const cropStartY = captureTop + deltaY;
+  const cropStartX = Math.max(0, quoteCenterX - desiredCenterX);
 
   html2canvas(document.body, {
     useCORS: true,
-    windowWidth: document.body.scrollWidth,
-    windowHeight: document.body.scrollHeight
+    backgroundColor: null,
+    scrollX: 0,
+    scrollY: 0,
+    windowWidth: isMobile ? window.innerWidth : document.documentElement.scrollWidth,
+    windowHeight: isMobile ? window.innerHeight : document.documentElement.scrollHeight,
+    scale: window.devicePixelRatio || 2
   }).then(canvas => {
-    const captureWidth = Math.min(canvas.width, 800);
-    const canvasHeight = captureHeight;
-
-    const quoteCenterY = quoteTop + quoteRect.height / 2;
-    const quoteCenterX = quoteLeft + quoteRect.width / 2;
-
-    const desiredCenterY = canvasHeight / 2;
-    const desiredCenterX = captureWidth / 2;
-
-    const deltaY = desiredCenterY - (quoteCenterY - captureTop);
-    const deltaX = desiredCenterX - quoteCenterX;
-
-    const cropStartY = captureTop + deltaY;
-    const cropStartX = Math.max(0, quoteCenterX - desiredCenterX);
-
     const croppedCanvas = document.createElement("canvas");
     const ctx = croppedCanvas.getContext("2d");
+
+    const captureWidth = isMobile ? canvas.width : Math.min(canvas.width, 800);
+    const captureH = isMobile ? canvas.height : captureHeight;
+
     croppedCanvas.width = captureWidth;
-    croppedCanvas.height = canvasHeight;
+    croppedCanvas.height = captureH;
 
     ctx.drawImage(
       canvas,
-      cropStartX, cropStartY,
-      captureWidth, canvasHeight,
-      0, 0,
-      captureWidth, canvasHeight
+      isMobile ? 0 : cropStartX,
+      isMobile ? 0 : cropStartY,
+      captureWidth,
+      captureH,
+      0,
+      0,
+      captureWidth,
+      captureH
     );
 
     const today = new Date();
