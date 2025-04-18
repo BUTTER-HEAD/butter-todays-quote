@@ -144,9 +144,12 @@ function saveAsImage() {
   const buttonRect = shareButtonEl.getBoundingClientRect();
   const quoteRect = quoteBox.getBoundingClientRect();
 
-  const captureTop = titleRect.top - 50;
-  const captureBottom = buttonRect.bottom + 50;
+  const captureTop = titleRect.top + window.scrollY - 50;
+  const captureBottom = buttonRect.bottom + window.scrollY + 50;
   const captureHeight = captureBottom - captureTop;
+
+  const quoteTop = quoteRect.top + window.scrollY;
+  const quoteLeft = quoteRect.left + window.scrollX;
 
   html2canvas(document.body, {
     useCORS: true,
@@ -156,24 +159,20 @@ function saveAsImage() {
     const captureWidth = Math.min(canvas.width, 800);
     const canvasHeight = captureHeight;
 
-    const quoteOffsetY = quoteRect.top - captureTop;
-    const quoteOffsetX = quoteRect.left;
+    const quoteCenterY = quoteTop + quoteRect.height / 2;
+    const quoteCenterX = quoteLeft + quoteRect.width / 2;
 
     const desiredCenterY = canvasHeight / 2;
     const desiredCenterX = captureWidth / 2;
 
-    const quoteCenterY = quoteOffsetY + quoteRect.height / 2;
-    const quoteCenterX = quoteOffsetX + quoteRect.width / 2;
-
-    const deltaY = desiredCenterY - quoteCenterY;
+    const deltaY = desiredCenterY - (quoteCenterY - captureTop);
     const deltaX = desiredCenterX - quoteCenterX;
 
     const cropStartY = captureTop + deltaY;
-    const cropStartX = Math.max(0, deltaX);
+    const cropStartX = Math.max(0, quoteCenterX - desiredCenterX);
 
     const croppedCanvas = document.createElement("canvas");
     const ctx = croppedCanvas.getContext("2d");
-
     croppedCanvas.width = captureWidth;
     croppedCanvas.height = canvasHeight;
 
@@ -187,7 +186,7 @@ function saveAsImage() {
 
     const today = new Date();
     const dateStr = today.toISOString().split("T")[0];
-    const fileName = `${dateStr}_오늘의 한 구절.png`;
+    const fileName = `${dateStr}_오늘의 한 구절절.png`;
 
     const link = document.createElement('a');
     link.download = fileName;
