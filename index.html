@@ -80,6 +80,14 @@
       background-color: #e4e9c4;
     }
 
+logo-image {
+  height: 100%;
+  max-height: 40px;
+  max-width: 100px;
+  width: auto;
+  object-fit: contain;
+}
+
 @media (max-width: 480px) {
   body {
     padding: 20px;
@@ -111,6 +119,7 @@
     <button onclick="recommendQuote()">다른 구절 보기</button>
     <button onclick="saveAsImage()">저장하기</button>
     <button onclick="shareQuote()">공유하기</button>
+    <img src="로고.png" alt="로고" class="logo-image">
   </div>
 
 <script>
