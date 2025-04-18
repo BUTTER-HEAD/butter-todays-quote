@@ -179,10 +179,10 @@ function saveAsImage() {
 
     ctx.drawImage(
       canvas,
-      cropStartX, cropStartY,                // source x, 
-      captureWidth, canvasHeight,            // source width, height
-      0, 0,                                  // destination x, y
-      captureWidth, canvasHeight             // destination width, height
+      cropStartX, cropStartY,
+      captureWidth, canvasHeight,
+      0, 0,
+      captureWidth, canvasHeight
     );
 
     const today = new Date();
