@@ -132,18 +132,57 @@ function recommendQuote() {
   quoteBox.appendChild(metaEl);
 }
 
-  function saveAsImage() {
-    html2canvas(document.body).then(canvas => {
-      const today = new Date();
-      const dateStr = today.toISOString().split("T")[0];
-      const fileName = `${dateStr}_오늘의구절.png`;
+function saveAsImage() {
+  const captureTarget = document.body;
 
-      const link = document.createElement('a');
-      link.download = fileName;
-      link.href = canvas.toDataURL();
-      link.click();
-    });
-  }
+  document.querySelectorAll('.screen-only').forEach(el => el.style.display = 'none');
+  document.querySelectorAll('.share-only').forEach(el => el.style.display = 'block');
+
+  const titleEl = document.querySelector("h1");
+  const shareButtonEl = document.querySelector("button:last-of-type");
+
+  const titleRect = titleEl.getBoundingClientRect();
+  const buttonRect = shareButtonEl.getBoundingClientRect();
+
+  const captureTop = titleRect.top - 50;
+  const captureBottom = buttonRect.bottom + 50;
+  const captureHeight = captureBottom - captureTop;
+
+  html2canvas(document.body, {
+    useCORS: true,
+    width: 800,
+    windowWidth: document.body.scrollWidth,
+    windowHeight: document.body.scrollHeight
+  }).then(canvas => {
+    const croppedCanvas = document.createElement("canvas");
+    const ctx = croppedCanvas.getContext("2d");
+
+    const targetWidth = Math.min(canvas.width, 800); // 최대 800px로 제한
+    croppedCanvas.width = targetWidth;
+    croppedCanvas.height = captureHeight;
+
+    ctx.drawImage(
+      canvas,
+      0, captureTop,                // source x, y
+      targetWidth, captureHeight,  // source width, height
+      0, 0,                         // dest x, y
+      targetWidth, captureHeight   // dest width, height
+    );
+
+    const today = new Date();
+    const dateStr = today.toISOString().split("T")[0];
+    const fileName = `${dateStr}_오늘의한구절.png`;
+
+    const link = document.createElement('a');
+    link.download = fileName;
+    link.href = croppedCanvas.toDataURL();
+    link.click();
+
+    document.querySelectorAll('.screen-only').forEach(el => el.style.display = '');
+    document.querySelectorAll('.share-only').forEach(el => el.style.display = 'none');
+  });
+}
+
 
   function shareQuote() {
     const quoteText = document.getElementById("quote-box").innerText;
