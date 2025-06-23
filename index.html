@@ -206,7 +206,7 @@ function saveAsImage() {
     const ctx = croppedCanvas.getContext("2d");
 
     const captureWidth = isMobile ? canvas.width : Math.min(canvas.width, 800);
-    const captureH = isMobile ? canvas.height : Math.max(canvas.width, 1000);
+    const captureH = isMobile ? canvas.height : Math.max(canvas.height, 1000);
 
     croppedCanvas.width = captureWidth;
     croppedCanvas.height = captureH;
