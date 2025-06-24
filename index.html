@@ -22,6 +22,12 @@
       margin-bottom: 10px;
     }
 
+@media (max-width: 500px) {
+  h1 {
+    font-size: 2em;
+  }
+}
+
     #date {
       font-family: 'Gowun Dodum', sans-serif;
       font-size: 0.95em;
@@ -55,6 +61,12 @@
       font-size: 0.9em;
       color: #888;
     }
+
+	  
+#capture-area {
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
 
     .button-group {
       display: flex;
@@ -110,27 +122,27 @@
   </style>
 </head>
 <body>
+<div id="capture-area">
   <img src="로고.png" alt="로고" class="logo-image">
   <h1>◌( 오늘의 책 속 한 구절 )◌</h1>
   <div id="date"></div>
-
   <div id="quote-box"></div>
-
+</div>
+	
   <div class="button-group">
     <button onclick="recommendQuote()">다른 구절 보기</button>
     <button onclick="saveAsImage()">저장하기</button>
-    <button onclick="shareQuote()">공유하기</button>
+    <button onclick="copyLink()">복사하기</button>
   </div>
 
 <script>
   let quotes = [];
 
-  // 외부 JSON에서 구절 목록 불러오기
   fetch('quotes.json')
     .then(response => response.json())
     .then(data => {
       quotes = data;
-      recommendQuote(); // 첫 구절 자동 출력
+      recommendQuote();
     })
     .catch(error => {
       console.error("구절 데이터를 불러오지 못했습니다:", error);
@@ -162,74 +174,33 @@ function recommendQuote() {
 }
 
 function saveAsImage() {
+  const isMobile = /Mobi|Android|iPhone/i.test(navigator.userAgent);
+
+  if (!isMobile) {
+    alert("모바일에서만 가능한 기능입니다.");
+    return;
+  }
+
   document.querySelectorAll('.screen-only').forEach(el => el.style.display = 'none');
   document.querySelectorAll('.share-only').forEach(el => el.style.display = 'block');
 
-  const isMobile = window.innerWidth <= 500;
+const captureElement = document.getElementById("capture-area");
+const rect = captureElement.getBoundingClientRect();
+const top = rect.top + window.scrollY - 20;
+const height = rect.height + 40;
 
-  const quoteBox = document.getElementById("quote-box");
-  const titleEl = document.querySelector("h1");
-  const shareButtonEl = document.querySelector("button:last-of-type");
-
-  const titleRect = titleEl.getBoundingClientRect();
-  const buttonRect = shareButtonEl.getBoundingClientRect();
-  const quoteRect = quoteBox.getBoundingClientRect();
-
-  const captureTop = titleRect.top + window.scrollY - 50;
-  const captureBottom = buttonRect.bottom + window.scrollY + 50;
-  const captureHeight = captureBottom - captureTop;
-
-  const quoteTop = quoteRect.top + window.scrollY;
-  const quoteLeft = quoteRect.left + window.scrollX;
-  const quoteCenterY = quoteTop + quoteRect.height / 2;
-  const quoteCenterX = quoteLeft + quoteRect.width / 2;
-
-  const desiredCenterY = captureHeight / 2;
-  const desiredCenterX = 400;
-
-  const deltaY = desiredCenterY - (quoteCenterY - captureTop);
-  const deltaX = desiredCenterX - quoteCenterX;
-
-  const cropStartY = captureTop + deltaY;
-  const cropStartX = Math.max(0, quoteCenterX - desiredCenterX);
-
-  html2canvas(document.body, {
+html2canvas(captureElement, {
     useCORS: true,
-    backgroundColor: null,
-    scrollX: 0,
-    scrollY: 0,
-    windowWidth: isMobile ? window.innerWidth : document.documentElement.scrollWidth,
-    windowHeight: isMobile ? window.innerHeight : document.documentElement.scrollHeight,
+    backgroundColor: "#fefbd4",
     scale: window.devicePixelRatio || 2
   }).then(canvas => {
-    const croppedCanvas = document.createElement("canvas");
-    const ctx = croppedCanvas.getContext("2d");
-
-    const captureWidth = isMobile ? canvas.width : Math.min(canvas.width, 800);
-    const captureH = isMobile ? canvas.height : Math.max(canvas.height, 1000);
-
-    croppedCanvas.width = captureWidth;
-    croppedCanvas.height = captureH;
-
-    ctx.drawImage(
-      canvas,
-      isMobile ? 0 : cropStartX,
-      isMobile ? 0 : cropStartY,
-      captureWidth,
-      captureH,
-      0,
-      0,
-      captureWidth,
-      captureH
-    );
-
+    const link = document.createElement('a');
     const today = new Date();
     const dateStr = today.toISOString().split("T")[0];
     const fileName = `${dateStr}_오늘의 한 구절.png`;
 
-    const link = document.createElement('a');
     link.download = fileName;
-    link.href = croppedCanvas.toDataURL();
+    link.href = canvas.toDataURL();
     link.click();
 
     document.querySelectorAll('.screen-only').forEach(el => el.style.display = '');
@@ -237,22 +208,25 @@ function saveAsImage() {
   });
 }
 
-  function shareQuote() {
-    const quoteText = document.getElementById("quote-box").innerText;
-    const shareData = {
-      title: "◌( 오늘의 한 구절 )◌",
-      text: quoteText,
-      url: "https://butter-head.imweb.me/shop_view/?idx=34"
-    };
+function copyLink() {
+  const quoteText = document.getElementById("quote").innerText;
 
-    if (navigator.share) {
-      navigator.share(shareData).catch(err => console.error("공유 실패:", err));
-    } else {
-      alert("이 브라우저는 공유 기능을 지원하지 않습니다.");
-    }
-  }
+  const textToCopy = `◌( 버터헤드의 오늘의 책 속 한 구절 )◌
 
-  // 날짜 표시
+${quoteText}
+
+https://butter-head.imweb.me/38`;
+
+  const dummy = document.createElement("textarea");
+  dummy.value = textToCopy;
+  document.body.appendChild(dummy);
+  dummy.select();
+  document.execCommand("copy");
+  document.body.removeChild(dummy);
+
+  alert("텍스트가 복사되었습니다!");
+}
+
   const today = new Date();
   const formattedDate = today.toLocaleDateString('ko-KR', {
     year: 'numeric',
